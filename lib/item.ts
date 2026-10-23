@@ -11,3 +11,8 @@ export function formatUsd(cents: number): string {
 export function toPayPalValue(cents: number): string {
   return (cents / 100).toFixed(2);
 }
+
+// "20.00" → 2000
+export function fromPayPalValue(value: string): number {
+  return Math.round(Number(value) * 100);
+}

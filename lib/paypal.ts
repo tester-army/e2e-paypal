@@ -1,5 +1,5 @@
 import "server-only";
-import { Client, Environment, OrdersController } from "@paypal/paypal-server-sdk";
+import { Client, CustomError, Environment, OrdersController } from "@paypal/paypal-server-sdk";
 
 let orders: OrdersController | undefined;
 
@@ -19,4 +19,14 @@ export function getOrders(): OrdersController {
     }),
   );
   return orders;
+}
+
+// The status of a call PayPal refused (404, 422, …), or undefined for any other error.
+export function refusedStatus(error: unknown): number | undefined {
+  return error instanceof CustomError ? error.statusCode : undefined;
+}
+
+// PayPal's own page for an order, where the shopper approves it (again, after a decline).
+export function checkoutUrl(orderId: string): string {
+  return `https://www.sandbox.paypal.com/checkoutnow?token=${encodeURIComponent(orderId)}`;
 }
