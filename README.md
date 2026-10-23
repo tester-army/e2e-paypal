@@ -2,9 +2,18 @@
 
 A checkout that takes real PayPal payments in the PayPal sandbox, used as an example of end-to-end testing a payment page you don't own with [e2e](https://www.npmjs.com/package/e2e).
 
+![Checkout page with the order and a Pay with PayPal button](docs/screenshot.png)
+
 ## How it works
 
-The shopper leaves for PayPal's own checkout page, pays there, and comes back. Our server creates a PayPal order and redirects to it, so there is no PayPal script in the browser and no popup window.
+The shopper leaves for PayPal's own checkout page, pays there, and comes back:
+
+- **Checkout** (`app/page.tsx`) shows the order and a Pay with PayPal button.
+- **`POST /checkout`** (`app/checkout/route.ts`) creates a PayPal order and redirects to PayPal's checkout page on `sandbox.paypal.com`.
+- **`GET /capture`** (`app/capture/route.ts`) is where PayPal sends the shopper back after they approve. It takes the payment.
+- **Return page** (`app/return/page.tsx`) asks PayPal for the order and shows the result. When PayPal refuses the payment, it offers another way to pay.
+
+The amount comes from the server, and the return page checks with PayPal instead of trusting the URL. There is no PayPal script in the browser, no popup window, and no database: the PayPal order is the only state.
 
 ### Paying in the sandbox
 
@@ -37,13 +46,18 @@ Everything runs in the free PayPal sandbox. Log in at [developer.paypal.com](htt
 
 ## End-to-end tests
 
+The tests in `tests/redirect.e2e.ts` pay on PayPal's real page: the sandbox buyer logs in and pays, a guest pays with a card the bank refuses, and the shopper backs out. They combine exact locators on our pages with `agent.act` / `agent.assert` steps on PayPal's pages, then check what PayPal recorded through its API.
+
+- The buyer's password is an e2e credential: the agent fills it in without ever seeing it. e2e stops taking screenshots once it is filled, so that test checks PayPal's page with vision before logging in.
+- PayPal's pages change from run to run (the login, the guest card form, and where a refused card is declined: on PayPal's page, or when we take the payment). The agent adapts, the declined-card test accepts both outcomes, and every test runs up to two more times before it counts as failed.
+
 The agent model goes through the Vercel AI Gateway, so set `AI_GATEWAY_API_KEY` (or link a Vercel project). Then, with the dev server running:
 
 ```bash
 npm run test:e2e
 ```
 
-To test a different URL, set `APP_URL`. Configuration lives in `e2e.config.ts`.
+To watch the browser, run `npm exec -- e2e run --headed`. To test a different URL, set `APP_URL`. Configuration lives in `e2e.config.ts`.
 
 ## Scripts
 
