@@ -50,18 +50,36 @@ export const test = withPayPal.extend<{ startCheckout: StartCheckout }>({
   },
 });
 
-// A card on PayPal's guest form. CCREJECT-REFUSED as the first name makes the sandbox refuse it at capture.
-export function guest() {
-  return {
+// PayPal's sandbox remembers a card it refused and declines it from then on, so each scenario has its own card.
+const GUESTS = {
+  pays: {
+    number: "4772 1290 5653 3503",
+    firstName: "Grace",
+    lastName: "Hopper",
+    street: "2211 N First St",
+    city: "Sunnyvale",
+    zip: "94089",
+    phone: "6505550137",
+  },
+  // CCREJECT-REFUSED as the first name is PayPal's sandbox trigger for a refused card.
+  refused: {
     number: "4012 0000 3333 0026",
-    expiry: "12/30",
-    cvc: "123",
+    firstName: "CCREJECT-REFUSED",
     lastName: "Lovelace",
     street: "1 Main St",
     city: "San Jose",
-    state: "California",
     zip: "95131",
     phone: "4085551234",
+  },
+};
+
+// A card and billing details for PayPal's guest form.
+export function guestCard(scenario: keyof typeof GUESTS) {
+  return {
+    ...GUESTS[scenario],
+    expiry: "12/30",
+    cvc: "123",
+    state: "California",
     email: unique(`guest+${Date.now()}@example.com`),
   };
 }

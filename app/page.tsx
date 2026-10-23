@@ -15,7 +15,7 @@ export default function CheckoutPage() {
             A real PayPal payment in the sandbox, tested with e2e: in the browser, and against what PayPal recorded.
           </p>
           <p className="mt-8 type-code-s text-e2e-text-faint">
-            Log in as your sandbox buyer, or pay by card with 4012 0000 3333 0026, any future expiry, any CVV.
+            Log in as your sandbox buyer, or pay by card with 4772 1290 5653 3503, any future expiry, any CVV.
           </p>
         </div>
 

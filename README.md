@@ -17,13 +17,13 @@ The amount comes from the server, and the return page checks with PayPal instead
 
 ### Paying in the sandbox
 
-| How                                                                         | Result   |
-| --------------------------------------------------------------------------- | -------- |
-| Log in as your sandbox buyer and complete the purchase                      | Paid     |
-| Pay with Debit or Credit Card: `4012 0000 3333 0026`                        | Paid     |
-| Pay with Debit or Credit Card: the same card, first name `CCREJECT-REFUSED` | Declined |
+| How                                                                                 | Result   |
+| ----------------------------------------------------------------------------------- | -------- |
+| Log in as your sandbox buyer and complete the purchase                              | Paid     |
+| Pay with Debit or Credit Card: `4772 1290 5653 3503`                                | Paid     |
+| Pay with Debit or Credit Card: `4012 0000 3333 0026`, first name `CCREJECT-REFUSED` | Declined |
 
-For the card, use any future expiry date, any CVV, and any US billing address.
+For the card, use any future expiry date, any CVV, and any US billing address. PayPal's sandbox remembers a card it refused and declines it from then on, so keep the declined card apart from the one you pay with.
 
 ## Getting started
 
@@ -46,7 +46,7 @@ Everything runs in the free PayPal sandbox. Log in at [developer.paypal.com](htt
 
 ## End-to-end tests
 
-The tests in `tests/redirect.e2e.ts` pay on PayPal's real page: the sandbox buyer logs in and pays, a guest pays with a card the bank refuses, and the shopper backs out. They combine exact locators on our pages with `agent.act` / `agent.assert` steps on PayPal's pages, then check what PayPal recorded through its API.
+The tests in `tests/redirect.e2e.ts` pay on PayPal's real page: the sandbox buyer logs in and pays, a guest pays by card, a guest pays with a card the bank refuses, and the shopper backs out. They combine exact locators on our pages with `agent.act` / `agent.assert` steps on PayPal's pages, then check what PayPal recorded through its API.
 
 - The buyer's password is an e2e credential: the agent fills it in without ever seeing it. e2e stops taking screenshots once it is filled, so that test checks PayPal's page with vision before logging in.
 - PayPal's pages change from run to run (the login, the guest card form, and where a refused card is declined: on PayPal's page, or when we take the payment). The agent adapts, the declined-card test accepts both outcomes, and every test runs up to two more times before it counts as failed.
